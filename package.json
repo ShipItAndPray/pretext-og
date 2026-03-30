@@ -1,0 +1,58 @@
+{
+  "name": "@shipitandpray/pretext-og",
+  "version": "1.0.0",
+  "description": "OG image generator that fixes Satori's text wrapping bugs. Drop-in replacement for @vercel/og with pixel-perfect text layout powered by Pretext.",
+  "author": "ShipItAndPray",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@chenglou/pretext": "^0.0.3"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^0.1.53",
+    "@types/node": "^22.15.30",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
+  },
+  "peerDependencies": {
+    "@napi-rs/canvas": ">=0.1.53"
+  },
+  "peerDependenciesMeta": {
+    "@napi-rs/canvas": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "og-image",
+    "opengraph",
+    "satori",
+    "social-card",
+    "text-wrapping",
+    "pretext",
+    "next.js",
+    "canvas",
+    "png",
+    "vercel-og"
+  ]
+}

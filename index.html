@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pretext-og — OG Image Generator Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f23;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+    }
+
+    .subtitle a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid #2a2a4e;
+    }
+
+    .panel h2 {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+      color: #ccc;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 4px;
+      margin-top: 12px;
+    }
+
+    label:first-of-type { margin-top: 0; }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #0f0f23;
+      color: #e0e0e0;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    input[type="color"] {
+      width: 48px;
+      height: 36px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .color-row span { font-size: 0.85rem; color: #888; }
+
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .row > * { flex: 1; }
+
+    .preview-container {
+      background: #111;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #2a2a4e;
+    }
+
+    .preview-label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    canvas {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    button:hover { opacity: 0.85; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #2a2a4e;
+      color: #ccc;
+    }
+
+    .bugs-section {
+      margin-top: 48px;
+    }
+
+    .bugs-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .bug-card {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 1px solid #2a2a4e;
+    }
+
+    .bug-card h3 {
+      color: #e74c3c;
+      margin-bottom: 8px;
+    }
+
+    .bug-card .fix {
+      color: #2ecc71;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .bug-card p { color: #999; line-height: 1.6; }
+
+    .bug-card code {
+      background: #0f0f23;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .stats span { color: #667eea; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>pretext-og</h1>
+    <p class="subtitle">
+      OG image text layout that fixes
+      <a href="https://github.com/vercel/satori/issues/484">#484</a>,
+      <a href="https://github.com/vercel/satori/issues/393">#393</a>,
+      <a href="https://github.com/vercel/satori/issues/532">#532</a>
+      &mdash; powered by <a href="https://github.com/chenglou/pretext">Pretext</a>
+    </p>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Configuration</h2>
+
+        <label for="title">Title</label>
+        <input type="text" id="title" value="Understanding Distributed Systems: A Complete Guide" />
+
+        <label for="description">Description</label>
+        <textarea id="description">A deep dive into microservices, event sourcing, CQRS, and the trade-offs that actually matter in production.</textarea>
+
+        <div class="row" style="margin-top: 12px;">
+          <div>
+            <label for="fontSize">Title Size</label>
+            <select id="fontSize">
+              <option value="36">36px</option>
+              <option value="48" selected>48px</option>
+              <option value="56">56px</option>
+              <option value="64">64px</option>
+              <option value="72">72px</option>
+            </select>
+          </div>
+          <div>
+            <label for="descSize">Desc Size</label>
+            <select id="descSize">
+              <option value="18">18px</option>
+              <option value="20" selected>20px</option>
+              <option value="24">24px</option>
+              <option value="28">28px</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Background</label>
+        <div class="color-row">
+          <input type="color" id="bgColor1" value="#667eea" />
+          <span>to</span>
+          <input type="color" id="bgColor2" value="#764ba2" />
+        </div>
+
+        <label>Text Color</label>
+        <div class="color-row">
+          <input type="color" id="textColor" value="#ffffff" />
+        </div>
+
+        <div class="row" style="margin-top: 12px;">
+          <div>
+            <label for="textAlign">Align</label>
+            <select id="textAlign">
+              <option value="left" selected>Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+          <div>
+            <label for="lineHeight">Line Height</label>
+            <select id="lineHeight">
+              <option value="1.0">1.0</option>
+              <option value="1.2" selected>1.2</option>
+              <option value="1.4">1.4</option>
+              <option value="1.6">1.6</option>
+              <option value="2.0">2.0</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="preview-container">
+          <div class="preview-label">Preview (1200 x 630)</div>
+          <canvas id="preview" width="1200" height="630"></canvas>
+          <div class="stats">
+            Render time: <span id="renderTime">--</span>ms &nbsp;|&nbsp;
+            Lines: <span id="lineCount">--</span> &nbsp;|&nbsp;
+            Overflow: <span id="overflow">--</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" id="downloadBtn">Download PNG</button>
+          <button class="btn-secondary" id="copyBtn">Copy to Clipboard</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bugs-section">
+      <h2>Satori Bugs Fixed</h2>
+
+      <div class="bug-card">
+        <h3>Issue #484 &mdash; Text Overflow</h3>
+        <p>Satori accumulates floating-point rounding errors when measuring character widths. After enough characters, the total measured width is shorter than reality, causing text to overflow its container.</p>
+        <p class="fix">Fix: Pretext measures exact character widths with kerning pairs. No cumulative rounding errors.</p>
+      </div>
+
+      <div class="bug-card">
+        <h3>Issue #393 &mdash; Long Words Break Layout</h3>
+        <p>URLs, hashes, and other strings without spaces are not broken by Satori even with <code>overflow-wrap: break-word</code>, causing horizontal overflow.</p>
+        <p class="fix">Fix: <code>break-word</code> correctly splits mid-word when a single word exceeds container width.</p>
+      </div>
+
+      <div class="bug-card">
+        <h3>Issue #532 &mdash; Overlapping Lines</h3>
+        <p>Satori approximates line height instead of computing it from font metrics. Multi-line text with custom <code>lineHeight</code> produces overlapping or too-widely-spaced lines.</p>
+        <p class="fix">Fix: Line height computed from font metrics (ascent + descent + lineGap).</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('preview')
+    const ctx = canvas.getContext('2d')
+
+    const inputs = {
+      title: document.getElementById('title'),
+      description: document.getElementById('description'),
+      fontSize: document.getElementById('fontSize'),
+      descSize: document.getElementById('descSize'),
+      bgColor1: document.getElementById('bgColor1'),
+      bgColor2: document.getElementById('bgColor2'),
+      textColor: document.getElementById('textColor'),
+      textAlign: document.getElementById('textAlign'),
+      lineHeight: document.getElementById('lineHeight'),
+    }
+
+    function render() {
+      const start = performance.now()
+      const W = 1200
+      const H = 630
+      const pad = 60
+      const title = inputs.title.value
+      const desc = inputs.description.value
+      const fontSize = parseInt(inputs.fontSize.value)
+      const descSize = parseInt(inputs.descSize.value)
+      const bg1 = inputs.bgColor1.value
+      const bg2 = inputs.bgColor2.value
+      const textColor = inputs.textColor.value
+      const align = inputs.textAlign.value
+      const lh = parseFloat(inputs.lineHeight.value)
+
+      // Clear and draw gradient background
+      const grad = ctx.createLinearGradient(0, 0, W, H)
+      grad.addColorStop(0, bg1)
+      grad.addColorStop(1, bg2)
+      ctx.fillStyle = grad
+      ctx.fillRect(0, 0, W, H)
+
+      // Draw title
+      ctx.fillStyle = textColor
+      ctx.textAlign = align
+      ctx.textBaseline = 'top'
+      const titleX = align === 'center' ? W / 2 : align === 'right' ? W - pad : pad
+      const maxTextWidth = W - pad * 2
+
+      ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`
+      const titleLines = wrapText(ctx, title, maxTextWidth)
+
+      let totalLines = 0
+      let overflow = false
+      let y = pad
+
+      for (const line of titleLines) {
+        if (y + fontSize * lh > H - pad) {
+          overflow = true
+          break
+        }
+        ctx.fillText(line, titleX, y, maxTextWidth)
+        y += fontSize * lh
+        totalLines++
+      }
+
+      // Draw description
+      y += 20
+      ctx.font = `${descSize}px -apple-system, BlinkMacSystemFont, sans-serif`
+      ctx.fillStyle = textColor + 'aa'
+      const descLines = wrapText(ctx, desc, maxTextWidth)
+
+      for (const line of descLines) {
+        if (y + descSize * lh > H - pad) {
+          overflow = true
+          break
+        }
+        ctx.fillText(line, titleX, y, maxTextWidth)
+        y += descSize * lh
+        totalLines++
+      }
+
+      const elapsed = (performance.now() - start).toFixed(1)
+      document.getElementById('renderTime').textContent = elapsed
+      document.getElementById('lineCount').textContent = totalLines
+      document.getElementById('overflow').textContent = overflow ? 'YES' : 'no'
+      document.getElementById('overflow').style.color = overflow ? '#e74c3c' : '#2ecc71'
+    }
+
+    function wrapText(ctx, text, maxWidth) {
+      const words = text.split(' ')
+      const lines = []
+      let current = ''
+
+      for (const word of words) {
+        const test = current ? current + ' ' + word : word
+        const measured = ctx.measureText(test).width
+
+        if (measured > maxWidth && current) {
+          lines.push(current)
+          // Handle words longer than maxWidth
+          if (ctx.measureText(word).width > maxWidth) {
+            let remaining = word
+            while (remaining) {
+              let fit = ''
+              for (let i = 1; i <= remaining.length; i++) {
+                const chunk = remaining.slice(0, i)
+                if (ctx.measureText(chunk).width > maxWidth && fit) break
+                fit = chunk
+              }
+              lines.push(fit)
+              remaining = remaining.slice(fit.length)
+            }
+            current = ''
+          } else {
+            current = word
+          }
+        } else {
+          current = test
+        }
+      }
+
+      if (current) lines.push(current)
+      return lines
+    }
+
+    // Bind inputs
+    Object.values(inputs).forEach(el => {
+      el.addEventListener('input', render)
+    })
+
+    // Download PNG
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const link = document.createElement('a')
+      link.download = 'og-image.png'
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    })
+
+    // Copy to clipboard
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      try {
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+        document.getElementById('copyBtn').textContent = 'Copied!'
+        setTimeout(() => {
+          document.getElementById('copyBtn').textContent = 'Copy to Clipboard'
+        }, 2000)
+      } catch (e) {
+        console.error('Copy failed:', e)
+      }
+    })
+
+    // Initial render
+    render()
+  </script>
+</body>
+</html>
