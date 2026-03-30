@@ -1,5 +1,9 @@
 # @shipitandpray/pretext-og
 
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://shipitandpray.github.io/pretext-og/) [![GitHub](https://img.shields.io/github/stars/ShipItAndPray/pretext-og?style=social)](https://github.com/ShipItAndPray/pretext-og)
+
+> **[View Live Demo](https://shipitandpray.github.io/pretext-og/)**
+
 [![npm version](https://img.shields.io/npm/v/@shipitandpray/pretext-og.svg)](https://www.npmjs.com/package/@shipitandpray/pretext-og)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/@shipitandpray/pretext-og)](https://bundlephobia.com/result?p=@shipitandpray/pretext-og)
 
